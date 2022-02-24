@@ -1,12 +1,22 @@
-import { Controller, Get, Post, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Delete,
+  Body,
+} from '@nestjs/common';
+import { UserInputSchema } from './schemas/user-input.schema';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
   @Post()
-  create() {
-    return this.userService.create();
+  async create(@Body() createUser: UserInputSchema) {
+    return this.userService.create(createUser);
   }
 
   @Get()
@@ -15,17 +25,17 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.userService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string) {
-    return this.userService.update(+id);
+  update(@Param('id') id: number, @Body() updatedUser: UserInputSchema) {
+    return this.userService.update(id, updatedUser);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.userService.remove(id);
   }
 }

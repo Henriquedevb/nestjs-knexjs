@@ -1,29 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
+import { UserInputSchema } from './schemas/user-input.schema';
 
+//regras do knex
 @Injectable()
 export class UserService {
   constructor(@InjectModel() private readonly knex: Knex) {}
 
-  create() {
-    return 'This action adds a new user';
-  }
-
   async findAll() {
-    const users = await this.knex.table('usuarios');
-    return { users };
+    return await this.knex.table('usuarios');
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return await this.knex.table('usuarios').where('id', id);
   }
 
-  update(id: number) {
-    return `This action updates a #${id} user`;
+  async create({ email, username }: UserInputSchema) {
+    return this.knex('usuarios')
+      .insert({ email, username })
+      .into('usuarios')
+      .returning('');
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(id: number, { email, username }: UserInputSchema) {
+    return await this.knex
+      .table('usuarios')
+      .where('id', id)
+      .update({ email, username })
+      .returning('');
+  }
+
+  async remove(id: number) {
+    return await this.knex
+      .table('usuarios')
+      .where('id', id)
+      .delete()
+      .returning('');
   }
 }
